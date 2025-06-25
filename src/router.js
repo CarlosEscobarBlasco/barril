@@ -1,14 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Login from "./components/views/Login.vue";
-import Dashboard from "./components/views/Dashboard.vue";
-import Matches from "./components/views/Matches.vue";
-import MatchDetail from "./components/views/MatchDetail.vue";
+import Login from "./views/Login.vue";
+import Start from "./views/Start.vue";
+import Matches from "./views/Matches.vue";
+import Admin from "./views/Admin.vue";
+import MatchDetail from "./views/MatchDetail.vue";
+import Stats from "./views/Stats.vue";
 
 const routes = [
-  { path: "/", name: "Login", component: Login },
-  { path: "/dashboard", name: "Dashboard", component: Dashboard, meta: { title: 'Barril' } },
-  { path: "/matches", name: "Matches", component: Matches, meta: { title: 'Partidos' } },
-  { path: "/matches/:id", name: "MatchDetail", component: MatchDetail, meta: { title: 'Detalles de partido' } },
+  { path: "/login", name: "Login", component: Login },
+  { path: "/", name: "Start", component: Start },
+  { path: "/matches", name: "Matches", component: Matches },
+  { path: "/matches/:id", name: "MatchDetail", component: MatchDetail },
+  { path: "/admin", name: "Admin", component: Admin },
+  { path: "/stats", name: "Stats", component: Stats },
 ];
 
 const router = createRouter({

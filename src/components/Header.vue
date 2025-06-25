@@ -1,92 +1,62 @@
 <template>
   <nav
-    class="navbar navbar-light shadow-sm bg-white fixed-top py-2 border-bottom"
+    class="navbar navbar-light shadow-sm bg-white sticky-top py-2 border-bottom"
   >
-    <div
-      class="container-fluid d-flex align-items-center justify-content-between"
-    >
-      <!-- Back button -->
-      <div class="d-flex align-items-center">
-        <button
-          v-if="showBackButton"
-          @click="goBack"
-          class="btn me-3 d-flex align-items-center justify-content-center"
-          style="width: 38px; height: 38px; border-radius: 50%"
-          aria-label="Volver"
-        >
-          <i class="bi bi-chevron-left"></i>
-        </button>
+    <div class="d-flex align-items-center w-100">
+      <button
+        v-if="showBackButton"
+        @click="goBack"
+        class="btn col-1 d-flex align-items-center justify-content-center"
+        aria-label="Volver"
+      >
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <div v-else class="col-1"></div>
 
-        <router-link
-          to="/dashboard"
-          class="navbar-brand fw-bold fs-4 text-primary mb-0"
-        >
-          Barril
-        </router-link>
-      </div>
-
-      <!-- Logout -->
-      <!-- <div>
-        <button
-          v-if="user"
-          @click="logout"
-          class="btn btn-outline-danger d-flex align-items-center"
-        >
-          <i class="bi bi-box-arrow-right me-2"></i> Logout
-        </button>
-      </div> -->
+      <router-link to="/" class="navbar-brand fw-bold fs-4 text-primary mb-0">
+        {{ store.title || "Barril" }}
+      </router-link>
     </div>
   </nav>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { supabase } from "../supabase";
-import { ref, onMounted, computed, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useHeaderStore } from "@/stores/useHeaderStore";
 
-export default {
-  setup() {
-    const user = ref(null);
-    const router = useRouter();
-    const route = useRoute();
-    const pageTitle = ref("");
+const store = useHeaderStore();
+const user = ref(null);
+const router = useRouter();
+const route = useRoute();
 
-    const showBackButton = computed(() => route.path !== "/dashboard");
+const showBackButton = computed(() => route.path !== "/");
 
-    const getUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      user.value = session?.user || null;
-    };
-
-    const logout = async () => {
-      await supabase.auth.signOut();
-      user.value = null;
-      window.location.href = "/";
-    };
-
-    const goBack = () => {
-      router.back();
-    };
-
-    const updateTitle = () => {
-      pageTitle.value = route.meta.title || "Barril";
-    };
-
-    onMounted(() => {
-      updateTitle();
-      getUser();
-
-      supabase.auth.onAuthStateChange((_event, session) => {
-        user.value = session?.user || null;
-      });
-    });
-    watch(route, updateTitle);
-
-    return { user, logout, showBackButton, goBack };
-  },
+const getUser = async () => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  user.value = session?.user || null;
 };
+
+const logout = async () => {
+  await supabase.auth.signOut();
+  user.value = null;
+  window.location.href = "/login";
+};
+
+const goBack = () => {
+  router.back();
+};
+
+onMounted(() => {
+  getUser();
+  supabase.auth.onAuthStateChange((_event, session) => {
+    user.value = session?.user || null;
+  });
+});
 </script>
 
 <style scoped>

@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
+import { useHeaderStore } from "@/stores/useHeaderStore";
 import * as bootstrap from "bootstrap";
-import { supabase } from "../../supabase";
-import Match from "../../components/Match.vue";
+import { supabase } from "../supabase";
+import Match from "../components/Match.vue";
 
 const modalElement = ref(null);
 let modalInstance = null;
@@ -11,6 +12,7 @@ const matchDate = ref("");
 const selectedLocation = ref("");
 const locationOptions = ["Lopez Socas", "Casa Blanca III"];
 const matches = ref([]);
+const store = useHeaderStore();
 
 const openModal = () => {
   matchDate.value = "";
@@ -49,14 +51,17 @@ const loadMatches = async () => {
 
 onMounted(async () => {
   modalInstance = new bootstrap.Modal(modalElement.value);
+  store.setTitle("Partidos");
   await loadMatches();
+});
+
+onUnmounted(() => {
+  store.setTitle("");
 });
 </script>
 
 <template>
-  <div
-    class="d-flex flex-column align-items-center h-100 p-3"
-  >
+  <div class="d-flex flex-column align-items-center h-100 p-3">
     <div class="d-flex flex-column col-12 col-lg-6 gap-3">
       <Match v-for="match in matches" :key="match.id" :match="match" />
     </div>
@@ -87,7 +92,9 @@ onMounted(async () => {
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="createMatchModalLabel">Crear partido</h5>
+            <h5 class="modal-title" id="createMatchModalLabel">
+              Crear partido
+            </h5>
             <button
               type="button"
               class="btn-close"

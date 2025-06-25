@@ -1,15 +1,9 @@
 <template>
-  <Header />
-  <main
-    style="
-      height: 100vh;
-      padding-top: 56px;
-      box-sizing: border-box;
-      overflow-y: auto;
-    "
-    class="bg-light"
-  >
-    <router-view />
+  <main class="d-flex flex-column bg-light h-100">
+    <div class="h-100 d-flex flex-column">
+      <Header />
+      <router-view />
+    </div>
   </main>
 </template>
 

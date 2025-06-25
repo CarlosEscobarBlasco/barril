@@ -1,14 +1,14 @@
 <script setup>
-import Tile from "../../components/Tile.vue";
+import Tile from "../components/Tile.vue";
 </script>
 
 <template>
   <div
-    class="d-flex flex-column justify-content-center align-items-center h-100 p-3"
+    class="d-flex flex-column justify-content-center align-items-center p-3 overflow-auto"
   >
     <Tile
       title="Partidos"
-      icon="bi bi-calendar"
+      icon="mdi mdi-soccer"
       class="m-2"
       to="/matches"
     />
@@ -19,6 +19,6 @@ import Tile from "../../components/Tile.vue";
 
 <script>
 export default {
-  name: "Dashboard",
+  name: "Start",
 };
 </script>

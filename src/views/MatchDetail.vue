@@ -1,10 +1,11 @@
 <script setup>
-import { ref, onMounted, useTemplateRef, computed } from "vue";
+import { ref, onMounted, useTemplateRef, computed, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
-import { supabase } from "../../supabase";
+import { supabase } from "../supabase";
+import { useHeaderStore } from "@/stores/useHeaderStore";
 import Multiselect from "vue-multiselect";
-import Collapsible from "../../components/Collapsible.vue";
-import PlayerActionsTable from "../../components/PlayerActionsTable.vue";
+import Collapsible from "../components/Collapsible.vue";
+import PlayerActionsTable from "../components/PlayerActionsTable.vue";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 const route = useRoute();
@@ -13,6 +14,7 @@ const matchId = route.params.id;
 const playerActions = ref([]);
 const players = ref([]);
 const actions = ref([]);
+const matchDetails = ref({});
 
 const selectedActor = ref(null);
 const selectedAction = ref(null);
@@ -24,16 +26,26 @@ const actorSelect = useTemplateRef("actorSelect");
 const actionSelect = useTemplateRef("actionSelect");
 const targetSelect = useTemplateRef("targetSelect");
 
-const loadData = async () => {
-  const [{ data: pa }, { data: ps }, { data: ac }] = await Promise.all([
-    supabase.from("player_action").select("*").eq("match_id", matchId),
-    supabase.from("player").select("id, name, nickname"),
-    supabase.from("action").select("id, name"),
-  ]);
+const store = useHeaderStore();
 
+const loadData = async () => {
+  const [{ data: pa }, { data: ma }, { data: ps }, { data: ac }] =
+    await Promise.all([
+      supabase
+        .from("player_action")
+        .select("*")
+        .eq("match_id", matchId)
+        .order("id", { ascending: false }),
+      supabase.from("match").select("*").eq("id", matchId),
+      supabase.from("player").select("id, name, nickname"),
+      supabase.from("action").select("id, name"),
+    ]);
+
+  matchDetails.value = ma[0] || {};
   playerActions.value = pa || [];
   players.value = ps || [];
   actions.value = ac || [];
+  store.setTitle("Partido: " + formatDate(matchDetails.value.date));
 };
 
 const saveAction = async () => {
@@ -123,13 +135,26 @@ const confirmDelete = async () => {
   showModal.value = false;
 };
 
+function formatDate(date) {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0"); // los meses empiezan en 0
+  const year = d.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
 onMounted(() => {
   loadData();
+});
+
+onUnmounted(() => {
+  store.setTitle("");
 });
 </script>
 
 <template>
-  <div class="p-3">
+  <div class="p-3 d-flex flex-column h-100">
     <div class="d-flex gap-3 flex-column mb-4">
       <div>
         <label>Jugador*</label>
@@ -171,12 +196,17 @@ onMounted(() => {
         Guardar
       </button>
     </div>
+    <hr />
     <Collapsible :title="'Acciones (' + playerActions.length + ')'">
       <PlayerActionsTable
         :actions="preparedActions"
         @deleteAction="onRequestDelete"
       />
     </Collapsible>
+    <hr />
+    <button class="btn btn-danger mt-5" @click="saveAction">
+      Eliminar partido
+    </button>
   </div>
 
   <div
