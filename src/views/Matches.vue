@@ -10,8 +10,8 @@ let modalInstance = null;
 
 const matchDate = ref("");
 const selectedLocation = ref("");
-const locationOptions = ["Lopez Socas", "Casa Blanca III"];
 const matches = ref([]);
+const locations = ref([]);
 const store = useHeaderStore();
 
 const openModal = () => {
@@ -23,7 +23,7 @@ const openModal = () => {
 const handleSubmit = async () => {
   const { data, error } = await supabase
     .from("match")
-    .insert([{ date: matchDate.value, location: selectedLocation.value }])
+    .insert([{ date: matchDate.value, location: selectedLocation.value.id }])
     .select();
 
   if (error) {
@@ -35,24 +35,27 @@ const handleSubmit = async () => {
   modalInstance.hide();
 };
 
-const loadMatches = async () => {
-  const { data, error } = await supabase
-    .from("match")
-    .select("*")
-    .order("id", { ascending: false });
+const loadData = async () => {
+  const [{ data: mt }, { data: loc }] = await Promise.all([
+    supabase.from("match").select("*").order("id", { ascending: false }),
+    supabase.from("location").select("id, name"),
+  ]);
+  
+  locations.value = loc || [];
 
-  if (error) {
-    console.error("Error loading matches:", error.message);
-    return;
-  }
-
-  matches.value = data;
+  matches.value = (mt || []).map(match => {
+    const locationName = locations.value.find(l => l.id === match.location)?.name || '-';
+    return {
+      ...match,
+      locationName,
+    };
+  });
 };
 
 onMounted(async () => {
   modalInstance = new bootstrap.Modal(modalElement.value);
   store.setTitle("Partidos");
-  await loadMatches();
+  await loadData();
 });
 
 onUnmounted(() => {
@@ -80,7 +83,6 @@ onUnmounted(() => {
       <i class="bi bi-plus-lg fs-4"></i>
     </button>
 
-    <!-- Modal -->
     <div
       class="modal fade"
       id="createMatchModal"
@@ -123,11 +125,11 @@ onUnmounted(() => {
                   required
                 >
                   <option
-                    v-for="location in locationOptions"
-                    :key="location"
+                    v-for="location in locations"
+                    :key="location.id"
                     :value="location"
                   >
-                    {{ location }}
+                    {{ location.name }}
                   </option>
                 </select>
               </div>

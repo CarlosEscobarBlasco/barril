@@ -1,7 +1,7 @@
 <template>
   <router-link
     :to="to"
-    class="btn btn-outline-primary col-10 col-lg-6 p-3 d-flex flex-column align-items-center text-decoration-none bg-white"
+    class="btn btn-outline-primary col-10 col-lg-6 p-3 d-flex flex-column align-items-center text-decoration-none"
   >
     <i :class="icon" class="fs-2 mb-2"></i>
     <h5 class="text-center mb-0">{{ title }}</h5>

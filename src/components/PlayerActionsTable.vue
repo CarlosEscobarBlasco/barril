@@ -1,6 +1,4 @@
 <script setup>
-import { defineProps, defineEmits } from "vue";
-
 const props = defineProps({
   actions: {
     type: Array,
@@ -33,9 +31,8 @@ const handleDelete = (id) => {
           <td>{{ action.targetName }}</td>
           <td>
             <button
-              class="btn btn-sm btn-danger"
+              class="btn btn-sm btn-outline-danger"
               @click="handleDelete(action.id)"
-              title="Borrar"
             >
               <i class="bi bi-trash"></i>
             </button>

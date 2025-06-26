@@ -1,35 +1,40 @@
 <script setup>
 import { ref, onMounted, useTemplateRef, computed, onUnmounted } from "vue";
-import { useRoute } from "vue-router";
-import { supabase } from "../supabase";
+import { useRoute, useRouter } from "vue-router";
+import { supabase } from "@/supabase";
 import { useHeaderStore } from "@/stores/useHeaderStore";
 import Multiselect from "vue-multiselect";
-import Collapsible from "../components/Collapsible.vue";
-import PlayerActionsTable from "../components/PlayerActionsTable.vue";
+import Collapsible from "@/components/Collapsible.vue";
+import PlayerActionsTable from "@/components/PlayerActionsTable.vue";
+import BaseModal from "@/components/BaseModal.vue";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+const router = useRouter();
 const route = useRoute();
 const matchId = route.params.id;
 
 const playerActions = ref([]);
 const players = ref([]);
 const actions = ref([]);
+const matchPlayers = ref([]);
 const matchDetails = ref({});
 
 const selectedActor = ref(null);
 const selectedAction = ref(null);
 const selectedTarget = ref(null);
 const actionToDelete = ref(null);
-const showModal = ref(false);
+
+const modalRef = ref(null);
+const modalDeleteMatch = ref(null);
+const modalAddPlayers = ref(null);
 
 const actorSelect = useTemplateRef("actorSelect");
 const actionSelect = useTemplateRef("actionSelect");
-const targetSelect = useTemplateRef("targetSelect");
 
 const store = useHeaderStore();
 
 const loadData = async () => {
-  const [{ data: pa }, { data: ma }, { data: ps }, { data: ac }] =
+  const [{ data: pa }, { data: ma }, { data: pm }, { data: ps }, { data: ac }] =
     await Promise.all([
       supabase
         .from("player_action")
@@ -37,7 +42,8 @@ const loadData = async () => {
         .eq("match_id", matchId)
         .order("id", { ascending: false }),
       supabase.from("match").select("*").eq("id", matchId),
-      supabase.from("player").select("id, name, nickname"),
+      supabase.from("player_match").select("*").eq("match_id", matchId),
+      supabase.from("player").select("id, name"),
       supabase.from("action").select("id, name"),
     ]);
 
@@ -45,6 +51,12 @@ const loadData = async () => {
   playerActions.value = pa || [];
   players.value = ps || [];
   actions.value = ac || [];
+  matchPlayers.value = pm || [];
+
+  matchPlayers.value = (pm || []).map((playerMatch) => {
+    return players.value.find((p) => p.id === playerMatch.player_id);
+  });
+
   store.setTitle("Partido: " + formatDate(matchDetails.value.date));
 };
 
@@ -61,11 +73,7 @@ const saveAction = async () => {
     ])
     .select();
 
-  if (error) {
-    console.error("Error inserting match:", error.message);
-    return;
-  }
-  playerActions.value.push(...data);
+  playerActions.value.unshift(...data);
   selectedActor.value = null;
   selectedAction.value = null;
   selectedTarget.value = null;
@@ -79,7 +87,7 @@ const onSelect = (nextRef) => {
 
 const getPlayerName = (id) => {
   const player = players.value.find((p) => p.id === id);
-  return player ? player.name || player.nickname || "-" : "-";
+  return player ? player.name : "-";
 };
 
 const getActionName = (id) => {
@@ -107,12 +115,12 @@ const onRequestDelete = (actionId) => {
     targetName: getPlayerName(rawAction.target_player_id),
   };
 
-  showModal.value = true;
+  modalRef.value.show();
 };
 
 const cancelDelete = () => {
   actionToDelete.value = null;
-  showModal.value = false;
+  modalRef.value.hide();
 };
 
 const confirmDelete = async () => {
@@ -123,16 +131,58 @@ const confirmDelete = async () => {
     .delete()
     .eq("id", actionToDelete.value.id);
 
-  if (error) {
-    console.error("Error deleting action:", error.message);
-    return;
-  }
-
   playerActions.value = playerActions.value.filter(
     (a) => a.id !== actionToDelete.value.id
   );
+
   actionToDelete.value = null;
   showModal.value = false;
+};
+
+const onRequestDeleteMatch = (actionId) => {
+  modalDeleteMatch.value.show();
+};
+
+const confirmDeleteMatch = async () => {
+  const { error } = await supabase.from("match").delete().eq("id", matchId);
+
+  router.back();
+};
+
+const cancelDeleteMatch = () => {
+  modalDeleteMatch.value.hide();
+};
+
+const confirmAddPlayers = () => {
+  modalAddPlayers.value.hide();
+};
+
+const addPlayer = async (player) => {
+  const exists = matchPlayers.value.some((p) => p.id === player.id);
+  if (!exists) {
+    const { data, error } = await supabase
+      .from("player_match")
+      .insert([
+        {
+          player_id: player.id,
+          match_id: matchId,
+        },
+      ])
+      .select();
+    if (!error) {
+      matchPlayers.value.push(player);
+    }
+  }
+};
+
+const removePlayer = async (player) => {
+  const { error } = await supabase.from("player_match").delete().match({
+    player_id: player.id,
+    match_id: matchId,
+  });
+  if (!error) {
+    matchPlayers.value = matchPlayers.value.filter((p) => p.id !== player.id);
+  }
 };
 
 function formatDate(date) {
@@ -144,8 +194,11 @@ function formatDate(date) {
   return `${day}/${month}/${year}`;
 }
 
-onMounted(() => {
-  loadData();
+onMounted(async () => {
+  await loadData();
+  if (matchPlayers.value.length === 0) {
+    modalAddPlayers.value.show();
+  }
 });
 
 onUnmounted(() => {
@@ -155,14 +208,13 @@ onUnmounted(() => {
 
 <template>
   <div class="d-flex flex-column p-3 h-100">
-    <!-- Formulario arriba -->
     <div class="d-flex flex-column gap-3 mb-4">
       <div>
         <label>Jugador*</label>
         <Multiselect
           ref="actorSelect"
           v-model="selectedActor"
-          :options="players"
+          :options="matchPlayers"
           label="name"
           track-by="id"
           placeholder="Jugador"
@@ -186,21 +238,52 @@ onUnmounted(() => {
         <label>Objetivo</label>
         <Multiselect
           v-model="selectedTarget"
-          :options="players"
+          :options="matchPlayers"
           label="name"
           track-by="id"
           placeholder="Objetivo"
         />
       </div>
 
-      <button ref="saveButton" class="btn btn-primary" @click="saveAction">
+      <button
+        ref="saveButton"
+        class="btn btn-primary"
+        @click="saveAction"
+        :disabled="!selectedActor || !selectedAction"
+      >
         Guardar
       </button>
     </div>
 
     <hr />
 
-    <Collapsible :title="'Jugadores (0)'"> </Collapsible>
+    <Collapsible :title="'Jugadores (' + matchPlayers.length + ')'">
+      <Multiselect
+        :options="players"
+        label="name"
+        track-by="id"
+        placeholder="Añadir jugador"
+        @select="addPlayer"
+      />
+      <ul class="list-group mt-3" v-if="matchPlayers.length">
+        <li
+          v-for="player in matchPlayers"
+          :key="player.id"
+          class="list-group-item d-flex justify-content-between align-items-center"
+        >
+          {{ player.name }}
+          <button
+            class="btn btn-sm btn-outline-danger"
+            @click="removePlayer(player)"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </li>
+      </ul>
+    </Collapsible>
+    <small v-if="matchPlayers.length < 10" class="text-danger">
+      El partido tiene menos de 10 jugadores ⚠
+    </small>
 
     <Collapsible
       class="mt-3"
@@ -214,52 +297,72 @@ onUnmounted(() => {
 
     <hr />
 
-    <button class="btn btn-danger mt-5" @click="saveAction">
+    <button class="btn btn-danger mt-5" @click="onRequestDeleteMatch">
       Eliminar partido
     </button>
 
-    <div
-      class="modal fade"
-      tabindex="-1"
-      :class="{ show: showModal }"
-      :style="{ display: showModal ? 'block' : 'none' }"
-      aria-modal="true"
-      role="dialog"
+    <BaseModal
+      ref="modalRef"
+      title="Confirmar borrado"
+      @accept="confirmDelete"
+      @cancel="cancelDelete"
     >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirmar borrado</h5>
-            <button
-              type="button"
-              class="btn-close"
-              @click="cancelDelete"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <p>¿Seguro que quieres borrar esta acción?</p>
-            <ul>
-              <li><strong>Jugador:</strong> {{ actionToDelete?.actorName }}</li>
-              <li><strong>Acción:</strong> {{ actionToDelete?.actionName }}</li>
-              <li>
-                <strong>Objetivo:</strong> {{ actionToDelete?.targetName }}
-              </li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              @click="cancelDelete"
-            >
-              Cancelar
-            </button>
-            <button type="button" class="btn btn-danger" @click="confirmDelete">
-              Aceptar
-            </button>
-          </div>
-        </div>
+      <div class="modal-body">
+        <p>¿Seguro que quieres borrar esta acción?</p>
+        <ul>
+          <li><strong>Jugador:</strong> {{ actionToDelete?.actorName }}</li>
+          <li><strong>Acción:</strong> {{ actionToDelete?.actionName }}</li>
+          <li><strong>Objetivo:</strong> {{ actionToDelete?.targetName }}</li>
+        </ul>
       </div>
-    </div>
+    </BaseModal>
+
+    <BaseModal
+      ref="modalDeleteMatch"
+      title="⚠ Confirmar borrado ⚠"
+      @accept="confirmDeleteMatch"
+      @cancel="cancelDeleteMatch"
+    >
+      <div class="modal-body">
+        <p>¿Seguro que quieres borrar este partido?</p>
+        <p class="text-danger">
+          Se perderan todas las estadisticas asociadas a este partido!
+        </p>
+      </div>
+    </BaseModal>
+
+    <BaseModal
+      ref="modalAddPlayers"
+      title="Añadir jugadores al partido"
+      disable-cancel
+      @accept="confirmAddPlayers"
+    >
+      <div class="modal-body">
+        <p v-if="matchPlayers.length === 0">El partido debe tener jugadores</p>
+        <p v-else>Añadir mas jugadores</p>
+        <Multiselect
+          :options="players"
+          label="name"
+          track-by="id"
+          placeholder="Añadir jugador"
+          @select="addPlayer"
+        />
+        <ul class="list-group mt-3" v-if="matchPlayers.length">
+          <li
+            v-for="player in matchPlayers"
+            :key="player.id"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
+            {{ player.name }}
+            <button
+              class="btn btn-sm btn-outline-danger"
+              @click="removePlayer(player)"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </BaseModal>
   </div>
 </template>

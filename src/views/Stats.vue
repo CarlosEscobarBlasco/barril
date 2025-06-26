@@ -13,7 +13,7 @@ const selectedPlayer = ref(null);
 
 const loadData = async () => {
   const [{ data: ps }, { data: ac }] = await Promise.all([
-    supabase.from("player").select("id, name, nickname"),
+    supabase.from("player").select("id, name"),
     supabase.from("action").select("id, name"),
   ]);
   players.value = ps || [];
@@ -34,17 +34,16 @@ onUnmounted(() => {
 });
 
 const stats = [
-  { action: 'Gol', done: 5, received: 2 },
-  { action: 'Asistencia', done: 3, received: 1 },
-  { action: 'Falta', done: 2, received: 4 },
-  { action: 'Picareta', done: 1, received: 0 },
-  { action: 'Muro', done: 0, received: 1 },
-  { action: 'Penalti', done: 1, received: 1 },
-  { action: 'Caño', done: 4, received: 3 },
-  { action: 'Gol en propia', done: 2, received: '-' },
-  { action: 'Parada', done: 6, received: 1 },
-]
-
+  { action: "Gol", done: 5, received: 2 },
+  { action: "Asistencia", done: 3, received: 1 },
+  { action: "Falta", done: 2, received: 4 },
+  { action: "Picareta", done: 1, received: 0 },
+  { action: "Muro", done: 0, received: 1 },
+  { action: "Penalti", done: 1, received: 1 },
+  { action: "Caño", done: 4, received: 3 },
+  { action: "Gol en propia", done: 2, received: "-" },
+  { action: "Parada", done: 6, received: 1 },
+];
 </script>
 
 <template>
@@ -58,7 +57,11 @@ const stats = [
       @select="loadStats"
     />
 
-    <StatsTable v-if="selectedPlayer" :actions="stats" class="mt-3"></StatsTable>
+    <StatsTable
+      v-if="selectedPlayer"
+      :actions="stats"
+      class="mt-3"
+    ></StatsTable>
   </div>
 </template>
 
