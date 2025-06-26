@@ -154,8 +154,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="p-3 d-flex flex-column h-100">
-    <div class="d-flex gap-3 flex-column mb-4">
+  <div class="d-flex flex-column p-3 h-100">
+    <!-- Formulario arriba -->
+    <div class="d-flex flex-column gap-3 mb-4">
       <div>
         <label>Jugador*</label>
         <Multiselect
@@ -196,52 +197,67 @@ onUnmounted(() => {
         Guardar
       </button>
     </div>
+
     <hr />
-    <Collapsible :title="'Acciones (' + playerActions.length + ')'">
+
+    <Collapsible :title="'Jugadores (0)'"> </Collapsible>
+
+    <Collapsible
+      class="mt-3"
+      :title="'Acciones (' + playerActions.length + ')'"
+    >
       <PlayerActionsTable
         :actions="preparedActions"
         @deleteAction="onRequestDelete"
       />
     </Collapsible>
+
     <hr />
+
     <button class="btn btn-danger mt-5" @click="saveAction">
       Eliminar partido
     </button>
-  </div>
 
-  <div
-    class="modal fade"
-    tabindex="-1"
-    :class="{ show: showModal }"
-    :style="{ display: showModal ? 'block' : 'none' }"
-    aria-modal="true"
-    role="dialog"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Confirmar borrado</h5>
-          <button
-            type="button"
-            class="btn-close"
-            @click="cancelDelete"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <p>¿Seguro que quieres borrar esta acción?</p>
-          <ul>
-            <li><strong>Jugador:</strong> {{ actionToDelete?.actorName }}</li>
-            <li><strong>Acción:</strong> {{ actionToDelete?.actionName }}</li>
-            <li><strong>Objetivo:</strong> {{ actionToDelete?.targetName }}</li>
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="cancelDelete">
-            Cancelar
-          </button>
-          <button type="button" class="btn btn-danger" @click="confirmDelete">
-            Aceptar
-          </button>
+    <div
+      class="modal fade"
+      tabindex="-1"
+      :class="{ show: showModal }"
+      :style="{ display: showModal ? 'block' : 'none' }"
+      aria-modal="true"
+      role="dialog"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar borrado</h5>
+            <button
+              type="button"
+              class="btn-close"
+              @click="cancelDelete"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Seguro que quieres borrar esta acción?</p>
+            <ul>
+              <li><strong>Jugador:</strong> {{ actionToDelete?.actorName }}</li>
+              <li><strong>Acción:</strong> {{ actionToDelete?.actionName }}</li>
+              <li>
+                <strong>Objetivo:</strong> {{ actionToDelete?.targetName }}
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="cancelDelete"
+            >
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-danger" @click="confirmDelete">
+              Aceptar
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <template>
-  <div class="table-responsive h-100 overflow-auto">
-    <table class="table table-striped table-bordered mb-0">
-      <thead class="table-primary text-center sticky-top">
+  <div class="h-100">
+    <table class="table table-striped mb-0">
+      <thead style="position: sticky; top: 0; background: white; z-index: 10">
         <tr>
           <th scope="col">Acción</th>
           <th scope="col">Realizadas</th>
