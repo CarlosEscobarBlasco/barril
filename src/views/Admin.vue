@@ -28,9 +28,3 @@ onUnmounted(() => {
     />
   </div>
 </template>
-
-<script>
-export default {
-  name: "Admin",
-};
-</script>

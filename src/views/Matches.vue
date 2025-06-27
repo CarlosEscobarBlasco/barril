@@ -31,7 +31,7 @@ const handleSubmit = async () => {
     return;
   }
 
-  matches.value.push(...data);
+  matches.value.unshift({ ...data[0], locationName: selectedLocation.value.name });
   modalInstance.hide();
 };
 
@@ -40,11 +40,12 @@ const loadData = async () => {
     supabase.from("match").select("*").order("id", { ascending: false }),
     supabase.from("location").select("id, name"),
   ]);
-  
+
   locations.value = loc || [];
 
-  matches.value = (mt || []).map(match => {
-    const locationName = locations.value.find(l => l.id === match.location)?.name || '-';
+  matches.value = (mt || []).map((match) => {
+    const locationName =
+      locations.value.find((l) => l.id === match.location)?.name || "-";
     return {
       ...match,
       locationName,

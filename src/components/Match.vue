@@ -1,15 +1,17 @@
 <template>
   <router-link
     :to="`${currentPath}/${match.id}`"
-    class="match-card text-decoration-none position-relative overflow-hidden"
+    class="card match-card text-decoration-none position-relative border-1 shadow-sm col-12 mx-auto"
   >
     <!-- Icono de fondo -->
     <span class="mdi mdi-soccer-field icon-background"></span>
 
     <!-- Contenido -->
-    <div class="d-flex flex-column text-center position-relative z-1">
-      <h5 class="mb-2 fw-bold text-primary">{{ formattedDate }}</h5>
-      <h6 class="mb-0 text-muted">{{ match.locationName }}</h6>
+    <div
+      class="card-body d-flex flex-column text-center position-relative z-1 p-1 justify-content-center"
+    >
+      <h5 class="fw-bold text-primary mb-3">{{ formattedDate }}</h5>
+      <h6 class="text-muted mb-0">{{ match.locationName }}</h6>
     </div>
   </router-link>
 </template>
@@ -34,28 +36,24 @@ const formattedDate = computed(() => {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  return `${dayName.charAt(0).toUpperCase() + dayName.slice(1)}, ${day}/${month}/${year}`;
+  return `${
+    dayName.charAt(0).toUpperCase() + dayName.slice(1)
+  }, ${day}/${month}/${year}`;
 });
 </script>
 
 <style scoped>
 .match-card {
-  background-color: #ffffff;
-  border: 2px solid #0d6efd30;
   border-radius: 1rem;
-  padding: 2rem 1rem;
+  min-height: 160px;
   transition: all 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 150px;
+  overflow: hidden;
 }
 
 .match-card:hover {
   background-color: #e7f1ff;
-  border-color: #0d6efd;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
 /* Icono de fondo */
@@ -63,8 +61,8 @@ const formattedDate = computed(() => {
   position: absolute;
   top: 50%;
   left: 50%;
-  font-size: 8rem;
-  color: #0d6efd10;
+  font-size: 10rem;
+  color: #0d6dfd0f; /* Muy suave */
   transform: translate(-50%, -50%);
   pointer-events: none;
   user-select: none;

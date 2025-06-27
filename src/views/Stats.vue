@@ -1,72 +1,24 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import Tile from "../components/Tile.vue";
+import { onMounted, onUnmounted } from "vue";
 import { useHeaderStore } from "@/stores/useHeaderStore";
-import { supabase } from "../supabase";
-import Multiselect from "vue-multiselect";
-import StatsTable from "../components/StatsTable.vue";
 
 const store = useHeaderStore();
 
-const players = ref([]);
-const actions = ref([]);
-const selectedPlayer = ref(null);
-
-const loadData = async () => {
-  const [{ data: ps }, { data: ac }] = await Promise.all([
-    supabase.from("player").select("id, name"),
-    supabase.from("action").select("id, name"),
-  ]);
-  players.value = ps || [];
-  actions.value = ac || [];
-};
-
-const loadStats = async (player) => {
-  //TODO
-};
-
 onMounted(async () => {
-  loadData();
   store.setTitle("Estadisticas");
 });
 
 onUnmounted(() => {
   store.setTitle("");
 });
-
-const stats = [
-  { action: "Gol", done: 5, received: 2 },
-  { action: "Asistencia", done: 3, received: 1 },
-  { action: "Falta", done: 2, received: 4 },
-  { action: "Picareta", done: 1, received: 0 },
-  { action: "Muro", done: 0, received: 1 },
-  { action: "Penalti", done: 1, received: 1 },
-  { action: "Caño", done: 4, received: 3 },
-  { action: "Gol en propia", done: 2, received: "-" },
-  { action: "Parada", done: 6, received: 1 },
-];
 </script>
 
 <template>
-  <div class="d-flex flex-column h-100">
-    <Multiselect
-      v-model="selectedPlayer"
-      :options="players"
-      label="name"
-      track-by="id"
-      placeholder="Jugador"
-      @select="loadStats"
-    />
-
-    <StatsTable
-      v-if="selectedPlayer"
-      :actions="stats"
-      class="mt-3"
-    ></StatsTable>
+  <div
+    class="d-flex flex-column justify-content-center align-items-center p-3 overflow-auto"
+  >
+    <Tile title="Por jugador" icon="mdi mdi-run" class="m-2" to="/player-stats" />
+    <Tile title="Totales" icon="mdi mdi-podium" class="m-2" to="/total-stats" />
   </div>
 </template>
-
-<script>
-export default {
-  name: "Stats",
-};
-</script>

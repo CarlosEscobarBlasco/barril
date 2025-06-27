@@ -6,12 +6,12 @@
       <button
         v-if="showBackButton"
         @click="goBack"
-        class="btn col-1 d-flex align-items-center justify-content-center"
+        class="btn col-1 p-0 d-flex align-items-center justify-content-center mx-2"
         aria-label="Volver"
       >
-        <i class="bi bi-chevron-left"></i>
+        <i class="mdi mdi-chevron-left mdi-24px"></i>
       </button>
-      <div v-else class="col-1"></div>
+      <div v-else class="col-1 mx-2"></div>
 
       <router-link to="/" class="navbar-brand fw-bold fs-4 text-primary mb-0">
         {{ store.title || "Barril" }}

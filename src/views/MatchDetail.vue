@@ -282,7 +282,7 @@ onUnmounted(() => {
       </ul>
     </Collapsible>
     <small v-if="matchPlayers.length < 10" class="text-danger">
-      El partido tiene menos de 10 jugadores ⚠
+      El partido tiene menos de 10 jugadores
     </small>
 
     <Collapsible

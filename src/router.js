@@ -5,6 +5,11 @@ import Matches from "./views/Matches.vue";
 import Admin from "./views/Admin.vue";
 import MatchDetail from "./views/MatchDetail.vue";
 import Stats from "./views/Stats.vue";
+import PlayerStats from "./views/PlayerStats.vue";
+import TotalStats from "./views/TotalStats.vue";
+import Players from "./views/Players.vue";
+import Actions from "./views/Actions.vue";
+import Courts from "./views/Courts.vue";
 import { supabase } from "./supabase";
 
 const routes = [
@@ -14,6 +19,11 @@ const routes = [
   { path: "/matches/:id", name: "MatchDetail", component: MatchDetail },
   { path: "/admin", name: "Admin", component: Admin },
   { path: "/stats", name: "Stats", component: Stats },
+  { path: "/player-stats", name: "PlayerStats", component: PlayerStats },
+  { path: "/total-stats", name: "TotalStats", component: TotalStats },
+  { path: "/players", name: "Players", component: Players },
+  { path: "/actions", name: "Actions", component: Actions },
+  { path: "/courts", name: "Courts", component: Courts },
 ];
 
 const router = createRouter({
