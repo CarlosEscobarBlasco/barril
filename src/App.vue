@@ -3,7 +3,7 @@
     <Header />
     <div class="flex-grow-1 overflow-auto bg-light">
       <div class="container py-4">
-        <router-view style="position: relative;z-index: 1;"/>
+        <router-view style="position: relative;"/>
       </div>
     </div>
   </main>
