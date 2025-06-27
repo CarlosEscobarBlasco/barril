@@ -133,14 +133,14 @@ const fetchPlayerStats = async () => {
 };
 
 const sortedActors = computed(() => {
-  const list = [...playerStats.value];
+  const list = [...playerStats.value].filter((p) => p.as_actor > 0);
   return list.sort((a, b) =>
     actorSortAsc.value ? a.as_actor - b.as_actor : b.as_actor - a.as_actor
   );
 });
 
 const sortedTargets = computed(() => {
-  const list = [...playerStats.value];
+  const list = [...playerStats.value].filter((p) => p.as_target > 0);
   return list.sort((a, b) =>
     targetSortAsc.value ? a.as_target - b.as_target : b.as_target - a.as_target
   );
