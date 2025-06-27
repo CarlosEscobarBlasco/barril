@@ -13,7 +13,7 @@
       </button>
       <div v-else class="col-1 mx-2"></div>
 
-      <router-link to="/" class="navbar-brand fw-bold fs-4 text-primary mb-0">
+      <router-link to="/" class="navbar-brand fw-bold fs-4 text-primary mb-0 d-flex align-items-center gap-2">
         {{ store.title || "Barril" }}
       </router-link>
     </div>
@@ -32,7 +32,7 @@ const user = ref(null);
 const router = useRouter();
 const route = useRoute();
 
-const showBackButton = computed(() => route.path !== "/");
+const showBackButton = computed(() => route.path !== "/" && route.path !== "/login");
 
 const getUser = async () => {
   const {

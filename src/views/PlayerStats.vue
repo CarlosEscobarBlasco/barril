@@ -22,7 +22,7 @@
 
     <table
       v-if="selectedPlayer && actionStats.length"
-      class="w-full text-sm text-left border border-gray-200 shadow-sm rounded-md overflow-hidden w-100 mt-3"
+      class="text-left border overflow-hidden w-100 mt-3"
     >
       <thead class="bg-gray-100 text-gray-700">
         <tr>

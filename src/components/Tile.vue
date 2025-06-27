@@ -1,11 +1,16 @@
 <template>
   <router-link
     :to="to"
-    class="card text-center text-decoration-none shadow-sm  tile-hover col-11 col-sm-10 col-md-8 mx-auto"
+    class="card text-center text-decoration-none shadow-sm tile-hover col-11 col-sm-10 col-md-8 mx-auto position-relative overflow-hidden"
   >
-    <div class="card-body d-flex flex-column align-items-center p-4">
-      <i :class="icon" class="fs-1 text-primary mb-3"></i>
-      <h6 class="card-title text-dark mb-0">{{ title }}</h6>
+    <!-- Icono como fondo -->
+    <i
+      :class="icon"
+      class="background-icon position-absolute"
+    ></i>
+
+    <div class="card-body d-flex flex-column align-items-center p-5 position-relative">
+      <h5 class="card-title mb-0 text-primary">{{ title }}</h5>
     </div>
   </router-link>
 </template>
@@ -19,7 +24,21 @@
   transform: translateY(-4px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
+
+.background-icon {
+  font-size: 8rem;
+  color: #0d6dfd0f; /* Azul clarito, ajusta al gusto */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+}
+.card-body {
+  z-index: 1; /* Asegura que el texto esté delante del icono */
+}
 </style>
+
 
 
 <script>
