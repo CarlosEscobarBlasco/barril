@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="modal fade"
-    tabindex="-1"
-    ref="modalRef"
-    aria-hidden="true"
-  >
+  <div class="modal fade" tabindex="-1" ref="modalRef" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -15,7 +10,12 @@
           <slot>{{ body }}</slot>
         </div>
         <div class="modal-footer">
-          <button v-if="disableCancel" type="button" class="btn btn-secondary" @click="onCancel">
+          <button
+            v-if="disableCancel"
+            type="button"
+            class="btn btn-secondary"
+            @click="onCancel"
+          >
             Cancel
           </button>
           <button type="button" class="btn btn-primary" @click="onAccept">
@@ -44,7 +44,7 @@ let modalInstance = null;
 
 onMounted(() => {
   modalInstance = new Modal(modalRef.value, {
-    backdrop: props.disableCancel ? 'static' : true,
+    backdrop: props.disableCancel ? "static" : true,
     keyboard: !props.disableCancel,
   });
 });
