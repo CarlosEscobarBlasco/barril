@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { supabase } from "../supabase";
 import { useHeaderStore } from "@/stores/useHeaderStore";
-import BaseModal from "@/components/baseModal.vue";
+import BaseModal from "@/components/BaseModal.vue";
 
 const store = useHeaderStore();
 
