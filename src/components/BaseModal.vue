@@ -11,7 +11,7 @@
         </div>
         <div class="modal-footer">
           <button
-            v-if="disableCancel"
+            v-if="!disableCancel"
             type="button"
             class="btn btn-secondary"
             @click="onCancel"

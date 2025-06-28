@@ -12,7 +12,7 @@
 
     <p v-if="selectedPlayer" class="text-muted my-3">
       Partidos:
-      <strong>{{ matchesWithPlayer }}</strong>
+      <strong>{{ matchesWithPlayer + '/' + totalMatches }}</strong>
       ({{
         totalMatches > 0
           ? ((matchesWithPlayer / totalMatches) * 100).toFixed(1)
@@ -97,13 +97,11 @@ const fetchMatchStats = async () => {
     return;
   }
 
-  // Total de partidos
   const { data: all, error: errAll } = await supabase
     .from("match")
     .select("id");
   totalMatches.value = errAll ? 0 : all.length;
 
-  // Partidos donde ha participado el jugador
   const { data: played, error: errPlayed } = await supabase
     .from("player_match")
     .select("match_id", { distinct: true })
