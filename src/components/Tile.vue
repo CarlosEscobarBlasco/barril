@@ -10,7 +10,7 @@
     ></i>
 
     <div class="card-body d-flex flex-column align-items-center p-5 position-relative">
-      <h5 class="card-title mb-0 text-primary">{{ title }}</h5>
+      <h4 class="card-title mb-0 text-primary">{{ title }}</h4>
     </div>
   </router-link>
 </template>

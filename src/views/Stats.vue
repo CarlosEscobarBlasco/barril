@@ -6,7 +6,7 @@ import { useHeaderStore } from "@/stores/useHeaderStore";
 const store = useHeaderStore();
 
 onMounted(async () => {
-  store.setTitle("Estadisticas");
+  store.setTitle("Estadísticas");
 });
 
 onUnmounted(() => {

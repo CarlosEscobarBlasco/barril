@@ -30,18 +30,17 @@
             <tr
               v-for="(p, index) in sortedActors"
               :key="p.player_id"
-              :class="[
-                index === 0
-                  ? 'gold-row'
-                  : index === 1
-                  ? 'silver-row'
-                  : index === 2
-                  ? 'bronze-row'
-                  : '',
-                'align-middle',
-              ]"
+              :class="['align-middle']"
             >
-              <td class="p-3">{{ p.player_name }}</td>
+              <td class="p-3 d-flex align-items-center">
+                <span
+                  :class="[
+                    index === 0 ? 'dot-gold' : index === 1 ? 'dot-silver' : index === 2 ? 'dot-bronze' : '',
+                    'status-dot'
+                  ]"
+                ></span>
+                {{ p.player_name }}
+              </td>
               <td class="p-3 text-center">
                 {{ p.as_actor }}
               </td>
@@ -68,18 +67,17 @@
             <tr
               v-for="(p, index) in sortedTargets"
               :key="p.player_id"
-              :class="[
-                index === 0
-                  ? 'gold-row'
-                  : index === 1
-                  ? 'silver-row'
-                  : index === 2
-                  ? 'bronze-row'
-                  : '',
-                'align-middle',
-              ]"
+              :class="['align-middle']"
             >
-              <td class="p-3">{{ p.player_name }}</td>
+              <td class="p-3 d-flex align-items-center">
+                <span
+                  :class="[
+                    index === 0 ? 'dot-gold' : index === 1 ? 'dot-silver' : index === 2 ? 'dot-bronze' : '',
+                    'status-dot'
+                  ]"
+                ></span>
+                {{ p.player_name }}
+              </td>
               <td class="p-3 text-center">
                 {{ p.as_target }}
               </td>
@@ -89,7 +87,7 @@
       </Collapsible>
     </div>
     <p v-else class="mt-5 w-100 text-center text-secondary">
-      Seleccione una acción para ver sus estadisticas
+      Seleccione una acción para ver sus estadísticas
     </p>
   </div>
 </template>
@@ -129,7 +127,7 @@ const fetchPlayerStats = async () => {
   if (!error && data) playerStats.value = data;
   else playerStats.value = [];
 
-  store.setTitle("Estadisticas: " + selectedAction.value.name);
+  store.setTitle("Estadísticas: " + selectedAction.value.name);
 };
 
 const sortedActors = computed(() => {
@@ -148,7 +146,7 @@ const sortedTargets = computed(() => {
 
 onMounted(async () => {
   fetchActions();
-  store.setTitle("Estadisticas");
+  store.setTitle("Estadísticas");
 });
 
 onUnmounted(() => {
@@ -159,18 +157,34 @@ watch(selectedAction, fetchPlayerStats);
 </script>
 
 <style scoped>
-.gold-row {
-  background-color: rgba(255, 215, 0, 0.2);
-}
-
-.silver-row {
-  background-color: rgba(192, 192, 192, 0.2);
-}
-
+/* Quitar fondo de filas */
+.gold-row,
+.silver-row,
 .bronze-row {
-  background-color: rgba(205, 127, 50, 0.2);
+  background-color: transparent;
 }
 
+/* Puntito pequeño al lado del nombre */
+.status-dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* Colores de las bolitas */
+.dot-gold {
+  background-color: #ffd700; /* Oro */
+}
+.dot-silver {
+  background-color: #c0c0c0; /* Plata */
+}
+.dot-bronze {
+  background-color: #cd7f32; /* Bronce */
+}
+
+/* Filas alternas para tabla */
 tbody tr:nth-child(even) {
   background-color: rgba(0, 0, 0, 0.03);
 }

@@ -54,7 +54,7 @@
       </tbody>
     </table>
     <p class="mt-5 w-100 text-center text-secondary" v-else>
-      Seleccione un jugador para ver sus estadisticas
+      Seleccione un jugador para ver sus estadísticas
     </p>
   </div>
 </template>
@@ -87,7 +87,7 @@ const fetchStats = async () => {
     player_id: selectedPlayer.value.id,
   });
   if (!error) actionStats.value = data;
-  store.setTitle("Estadisticas: " + selectedPlayer.value.name);
+  store.setTitle("Estadísticas: " + selectedPlayer.value.name);
 };
 
 const fetchMatchStats = async () => {
@@ -117,7 +117,7 @@ watch(selectedPlayer, () => {
 
 onMounted(async () => {
   fetchPlayers();
-  store.setTitle("Estadisticas");
+  store.setTitle("Estadísticas");
 });
 
 onUnmounted(() => {

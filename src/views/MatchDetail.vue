@@ -326,7 +326,7 @@ onUnmounted(() => {
       <div class="modal-body">
         <p>¿Seguro que quieres borrar este partido?</p>
         <p class="text-danger">
-          Se perderan todas las estadisticas asociadas a este partido!
+          Se perderan todas las estadísticas asociadas a este partido!
         </p>
       </div>
     </BaseModal>
