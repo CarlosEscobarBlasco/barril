@@ -83,7 +83,7 @@ const fetchPlayers = async () => {
 
 const fetchStats = async () => {
   if (!selectedPlayer.value) return;
-  const { data, error } = await supabase.rpc("get_action_stats", {
+  const { data, error } = await supabase.rpc("get_player_action_counts", {
     player_id: selectedPlayer.value.id,
   });
   if (!error) actionStats.value = data;

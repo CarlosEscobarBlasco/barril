@@ -13,7 +13,7 @@ import Tile from "../components/Tile.vue";
       to="/matches"
     />
     <Tile title="Administracion" icon="bi bi-people" class="m-2" to="/admin" />
-    <Tile title="Estadisticas" icon="bi bi-graph-up" class="m-2" to="/stats" />
+    <Tile title="Estadisticas" icon="mdi mdi-poll" class="m-2" to="/stats" />
   </div>
 </template>
 
